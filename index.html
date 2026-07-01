@@ -208,9 +208,21 @@
         <li>Folly Beach</li>
       </ul>
     </div>
-    <div class="area-map-placeholder">
-      <!-- Swap this div for an embedded Google Map iframe if you want -->
-      <p>Map placeholder<br><span>— embed a Google Map here later —</span></p>
+    <div class="area-map">
+      <!-- General service-area map, centered on James Island for now.
+           EDIT: once the business has a Google Business Profile listing,
+           replace the src with a "Share > Embed a map" link from that
+           listing's Google Maps page to show a real pinned business. -->
+      <iframe
+        src="https://www.google.com/maps?q=James+Island,+SC&output=embed"
+        width="100%"
+        height="100%"
+        style="border:0"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Low Country Shine service area map — James Island, SC">
+      </iframe>
     </div>
   </div>
 </section>
