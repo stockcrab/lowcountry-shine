@@ -1,0 +1,8 @@
+# Cloudflare deploy config — tells `wrangler deploy` to serve this folder
+# as static assets. No build step, no server code. Do not add a [build]
+# section or main worker script here unless the site stops being static.
+name = "lowcountry-shine"
+compatibility_date = "2026-07-01"
+
+[assets]
+directory = "."
