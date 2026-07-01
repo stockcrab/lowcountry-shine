@@ -1,6 +1,9 @@
 # macOS noise
 .DS_Store
 
+# Claude Code local machine settings — not part of the site
+.claude/
+
 # One-off zip snapshots and extracted old-version folders — not part of the site
 *.zip
 lowcountry-shine-final/
