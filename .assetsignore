@@ -1,0 +1,14 @@
+# Tells `wrangler deploy` which files NOT to publish as public static assets.
+# Without this, everything in the repo (including .git history, CLAUDE.md,
+# and this README) gets uploaded and becomes publicly downloadable.
+# Only real site files (index.html, styles.css, script.js, content.json,
+# admin/, images/) should ever be served.
+.git
+.wrangler
+.claude
+.gitignore
+.assetsignore
+.DS_Store
+CLAUDE.md
+README.md
+wrangler.toml
