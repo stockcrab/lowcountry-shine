@@ -1,0 +1,42 @@
+{
+  "business": {
+    "name": "Low Country Shine",
+    "phone": "(843) 555-0123",
+    "phone_href": "+18435550123",
+    "instagram": "lowcountryshine",
+    "email": "hello@lowcountryshine.com",
+    "tagline": "Where excellence is the #1 priority.",
+    "subheadline": "Residential & commercial pressure washing serving Charleston and the Lowcountry — driveways, siding, decks, roofs, and everything salt air leaves behind."
+  },
+  "service_area": [
+    "Charleston", "Mount Pleasant", "James Island", "Johns Island",
+    "Daniel Island", "Summerville", "West Ashley", "Folly Beach"
+  ],
+  "reviews": [
+    {
+      "text": "Driveway looked brand new. Showed up on time, fast, and the price was fair.",
+      "author": "Sarah M.",
+      "location": "Mount Pleasant",
+      "stars": 5
+    },
+    {
+      "text": "Used them for our storefront on King St. Easy to schedule, great communication.",
+      "author": "Mike T.",
+      "location": "Charleston",
+      "stars": 5
+    },
+    {
+      "text": "Soft-washed our siding before listing the house — sold within a week.",
+      "author": "Jennifer L.",
+      "location": "James Island",
+      "stars": 5
+    }
+  ],
+  "gallery": [],
+  "before_after": {
+    "before_src": "images/before.jpg",
+    "before_alt": "Dirty driveway before pressure washing",
+    "after_src": "images/after.jpg",
+    "after_alt": "Clean driveway after pressure washing"
+  }
+}

@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site Manager — Low Country Shine</title>
+<meta name="robots" content="noindex, nofollow">
+
+<!-- ===================================================
+     STANDALONE ADMIN PANEL
+     This file intentionally does NOT link to ../styles.css
+     or ../script.js — it is fully self-contained (own CSS
+     and JS below) so it can never be broken by edits to the
+     main site, and the main site can never be broken by edits
+     here. Only Google Fonts (already approved) is loaded.
+=================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ---- Base ---- */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #F4F1E8;
+    color: #1C231F;
+    min-height: 100vh;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  input, textarea, select { font-family: inherit; }
+
+  /* ---- Login screen ---- */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+  .login-box {
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 20px 50px -20px rgba(30,51,41,0.25);
+    text-align: center;
+  }
+  .login-box h1 {
+    font-size: 1.3rem;
+    margin-bottom: 0.4rem;
+    color: #2F4B3C;
+  }
+  .login-box p { font-size: 0.88rem; color: #666; margin-bottom: 1.5rem; }
+  .login-box input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1.5px solid #E8E2D2;
+    border-radius: 10px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+  .login-box input:focus { outline: 2px solid #5E8C7B; }
+  .login-box button {
+    width: 100%;
+    padding: 0.85rem;
+    background: #B98255;
+    color: white;
+    border: none;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .login-box button:hover { background: #a6764a; }
+  .login-error {
+    color: #c0392b;
+    font-size: 0.85rem;
+    margin-top: 0.8rem;
+    min-height: 1.1em;
+  }
+  @keyframes shake {
+    10%, 90% { transform: translateX(-2px); }
+    20%, 80% { transform: translateX(4px); }
+    30%, 50%, 70% { transform: translateX(-8px); }
+    40%, 60% { transform: translateX(8px); }
+  }
+  .shake { animation: shake 0.5s; }
+
+  /* ---- Panel layout ---- */
+  #panel { display: none; min-height: 100vh; }
+  .admin-header {
+    background: #2F4B3C;
+    color: #F4F1E8;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .admin-header h1 { font-size: 1.05rem; font-weight: 700; }
+  .logout-btn {
+    background: transparent;
+    border: 1.5px solid rgba(244,241,232,0.5);
+    color: #F4F1E8;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+  }
+  .logout-btn:hover { background: rgba(244,241,232,0.12); }
+
+  .admin-body {
+    display: flex;
+    min-height: calc(100vh - 60px);
+  }
+  .admin-sidebar {
+    width: 200px;
+    background: white;
+    border-right: 1px solid #E8E2D2;
+    padding: 1.2rem 0.8rem;
+    flex-shrink: 0;
+  }
+  .admin-nav-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 0.8rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 0.3rem;
+  }
+  .admin-nav-btn:hover { background: #F4F1E8; }
+  .admin-nav-btn.active { background: #2F4B3C; color: #F4F1E8; }
+
+  .admin-main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 760px;
+  }
+  .tab-panel h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+    color: #2F4B3C;
+  }
+
+  .field-group { display: flex; flex-direction: column; gap: 1.1rem; max-width: 480px; }
+  .field-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .field-group input, .field-group textarea {
+    font-size: 0.95rem;
+    padding: 0.7rem 0.9rem;
+    border: 1.5px solid #E8E2D2;
+    border-radius: 10px;
+    resize: vertical;
+  }
+  .field-group input:focus, .field-group textarea:focus {
+    outline: 2px solid #5E8C7B;
+    outline-offset: 1px;
+  }
+
+  .btn-primary {
+    background: #B98255;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.6rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  .btn-primary:hover { background: #a6764a; }
+  .btn-secondary {
+    background: #2F4B3C;
+    color: white;
+    border: none;
+    padding: 0.65rem 1.2rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 1.2rem;
+  }
+  .btn-secondary:hover { background: #24382c; }
+
+  .admin-card {
+    background: white;
+    border: 1px solid #E8E2D2;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .admin-card p { font-size: 0.92rem; margin-bottom: 0.4rem; }
+  .admin-card .meta { font-size: 0.82rem; color: #5E8C7B; font-weight: 600; }
+  .row-actions { display: flex; gap: 0.6rem; margin-top: 0.8rem; }
+  .row-actions button {
+    background: #F4F1E8;
+    border: 1px solid #E8E2D2;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .row-actions .btn-delete { color: #c0392b; }
+  .row-actions button:hover { background: #E8E2D2; }
+
+  .edit-form { display: flex; flex-direction: column; gap: 0.7rem; }
+  .edit-form input, .edit-form textarea, .edit-form select {
+    font-size: 0.9rem;
+    padding: 0.6rem 0.8rem;
+    border: 1.5px solid #E8E2D2;
+    border-radius: 8px;
+  }
+
+  .town-list { list-style: none; max-width: 420px; margin-bottom: 1.5rem; }
+  .town-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 0.9rem;
+    background: white;
+    border: 1px solid #E8E2D2;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .town-delete {
+    background: none;
+    border: none;
+    color: #c0392b;
+    font-size: 1rem;
+    padding: 0.2rem 0.5rem;
+  }
+  .add-row { display: flex; gap: 0.6rem; max-width: 420px; }
+  .add-row input {
+    flex: 1;
+    padding: 0.7rem 0.9rem;
+    border: 1.5px solid #E8E2D2;
+    border-radius: 10px;
+    font-size: 0.9rem;
+  }
+  .add-row button {
+    background: #B98255;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+  .add-row button:hover { background: #a6764a; }
+
+  .hint { font-size: 0.85rem; color: #5E8C7B; margin-bottom: 1.2rem; max-width: 480px; }
+  .hint-small { font-size: 0.75rem; color: #8a8675; margin: 0.5rem 0; }
+
+  .gallery-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .gallery-admin-item {
+    background: white;
+    border: 1px solid #E8E2D2;
+    border-radius: 12px;
+    padding: 0.8rem;
+  }
+  .gallery-admin-item img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 0.6rem;
+    background: #E8E2D2;
+  }
+  .gallery-label-input {
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    border: 1.5px solid #E8E2D2;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+  }
+  .gallery-delete {
+    width: 100%;
+    background: #F4F1E8;
+    border: 1px solid #E8E2D2;
+    color: #c0392b;
+    padding: 0.4rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .upload-btn {
+    display: inline-block;
+    background: #2F4B3C;
+    color: white;
+    padding: 0.75rem 1.4rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+  }
+  .upload-btn:hover { background: #24382c; }
+
+  .save-bar {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    border-top: 1px solid #E8E2D2;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .save-message {
+    font-size: 0.85rem;
+    color: #5E8C7B;
+    font-weight: 600;
+  }
+  .load-error {
+    background: #fdecea;
+    color: #c0392b;
+    border: 1px solid #f5c6c2;
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    max-width: 480px;
+  }
+
+  /* ---- Mobile ---- */
+  @media (max-width: 780px) {
+    .admin-body { flex-direction: column; }
+    .admin-sidebar {
+      width: 100%;
+      display: flex;
+      overflow-x: auto;
+      gap: 0.4rem;
+      padding: 0.8rem;
+      border-right: none;
+      border-bottom: 1px solid #E8E2D2;
+    }
+    .admin-nav-btn { white-space: nowrap; width: auto; margin-bottom: 0; }
+    .admin-main { padding: 1.2rem; }
+    .save-bar { padding: 1rem 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     LOGIN SCREEN
+     EDIT: change ADMIN_PASSWORD in the JavaScript below (search
+     for "shine2025") to set your own password.
+========================================================= -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h1>Low Country Shine</h1>
+    <p>Site Manager — enter password to continue</p>
+    <form id="loginForm">
+      <input type="password" id="passwordInput" placeholder="Password" autocomplete="current-password" required>
+      <button type="submit">Log In</button>
+    </form>
+    <p class="login-error" id="loginError"></p>
+  </div>
+</div>
+
+<!-- =========================================================
+     ADMIN PANEL — hidden until password is correct
+========================================================= -->
+<div id="panel">
+  <header class="admin-header">
+    <h1>Low Country Shine — Site Manager</h1>
+    <button class="logout-btn" id="logoutBtn">Log Out</button>
+  </header>
+
+  <div class="admin-body">
+    <nav class="admin-sidebar">
+      <button class="admin-nav-btn active" data-tab="business">Business Info</button>
+      <button class="admin-nav-btn" data-tab="reviews">Reviews</button>
+      <button class="admin-nav-btn" data-tab="gallery">Photo Gallery</button>
+      <button class="admin-nav-btn" data-tab="area">Service Area</button>
+    </nav>
+
+    <main class="admin-main">
+      <div id="loadErrorBox"></div>
+
+      <!-- BUSINESS INFO TAB -->
+      <section id="tab-business" class="tab-panel">
+        <h2>Business Info</h2>
+        <div class="field-group">
+          <label>Business name
+            <input type="text" id="f-name">
+          </label>
+          <label>Phone number
+            <input type="text" id="f-phone" placeholder="(843) 555-0123">
+          </label>
+          <label>Phone link (tel href — keep +1 and no spaces/dashes)
+            <input type="text" id="f-phone-href" placeholder="+18435550123">
+          </label>
+          <label>Instagram handle (no @ symbol)
+            <input type="text" id="f-instagram" placeholder="lowcountryshine">
+          </label>
+          <label>Email address
+            <input type="email" id="f-email">
+          </label>
+          <label>Hero tagline (main headline)
+            <input type="text" id="f-tagline">
+          </label>
+          <label>Hero subheadline
+            <textarea id="f-subheadline" rows="3"></textarea>
+          </label>
+        </div>
+      </section>
+
+      <!-- REVIEWS TAB -->
+      <section id="tab-reviews" class="tab-panel" style="display:none">
+        <h2>Reviews</h2>
+        <button class="btn-secondary" id="addReviewBtn">+ Add review</button>
+        <div id="reviewList"></div>
+      </section>
+
+      <!-- PHOTO GALLERY TAB -->
+      <section id="tab-gallery" class="tab-panel" style="display:none">
+        <h2>Photo Gallery</h2>
+        <p class="hint">Photos are saved locally in this browser. Send your updated content.json file to Jacob to publish changes to the live site.</p>
+        <div class="gallery-admin-grid" id="galleryAdminGrid"></div>
+        <label class="upload-btn">
+          + Upload photo
+          <input type="file" id="photoUpload" accept="image/jpeg,image/png" hidden>
+        </label>
+      </section>
+
+      <!-- SERVICE AREA TAB -->
+      <section id="tab-area" class="tab-panel" style="display:none">
+        <h2>Service Area</h2>
+        <ul class="town-list" id="townList"></ul>
+        <div class="add-row">
+          <input type="text" id="newTownInput" placeholder="Add a town">
+          <button id="addTownBtn">Add town</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="save-bar">
+    <button class="btn-primary" id="saveAllBtn">Save all changes</button>
+    <span class="save-message" id="saveMessage"></span>
+  </div>
+</div>
+
+<script>
+// =========================================================
+// LOW COUNTRY SHINE — ADMIN PANEL SCRIPT
+// Fully self-contained: no dependency on the main site's
+// script.js. Reads ../content.json for starting values and
+// exports an updated content.json as a download on save.
+// =========================================================
+
+// ---- Password protection ----
+// EDIT: change this line to set a new admin password.
+const ADMIN_PASSWORD = 'shine2025';
+
+const loginScreen = document.getElementById('loginScreen');
+const panel = document.getElementById('panel');
+const loginForm = document.getElementById('loginForm');
+const passwordInput = document.getElementById('passwordInput');
+const loginError = document.getElementById('loginError');
+const loginBox = document.querySelector('.login-box');
+
+function showPanel() {
+  loginScreen.style.display = 'none';
+  panel.style.display = 'block';
+}
+function showLogin() {
+  loginScreen.style.display = 'flex';
+  panel.style.display = 'none';
+}
+
+if (sessionStorage.getItem('lcs_auth') === 'true') {
+  showPanel();
+} else {
+  showLogin();
+}
+
+loginForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (passwordInput.value === ADMIN_PASSWORD) {
+    sessionStorage.setItem('lcs_auth', 'true');
+    loginError.textContent = '';
+    showPanel();
+  } else {
+    loginError.textContent = 'Incorrect password';
+    loginBox.classList.remove('shake');
+    // Force reflow so the animation can replay on repeated wrong attempts.
+    void loginBox.offsetWidth;
+    loginBox.classList.add('shake');
+    passwordInput.value = '';
+    passwordInput.focus();
+  }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  sessionStorage.removeItem('lcs_auth');
+  showLogin();
+});
+
+// ---- Sidebar tab navigation ----
+document.querySelectorAll('.admin-nav-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.admin-nav-btn').forEach((b) => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach((t) => (t.style.display = 'none'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).style.display = 'block';
+  });
+});
+
+// ---- State ----
+// Working copies of the editable arrays. Business fields are read
+// directly from their inputs at save time instead of being mirrored here.
+let reviews = [];
+let towns = [];
+let gallery = [];
+let beforeAfter = { before_src: 'images/before.jpg', before_alt: '', after_src: 'images/after.jpg', after_alt: '' };
+
+// ---- Load content.json ----
+function loadAdminContent() {
+  fetch('../content.json')
+    .then((res) => {
+      if (!res.ok) throw new Error('content.json responded with ' + res.status);
+      return res.json();
+    })
+    .then((data) => {
+      const business = data.business || {};
+      document.getElementById('f-name').value = business.name || '';
+      document.getElementById('f-phone').value = business.phone || '';
+      document.getElementById('f-phone-href').value = business.phone_href || '';
+      document.getElementById('f-instagram').value = business.instagram || '';
+      document.getElementById('f-email').value = business.email || '';
+      document.getElementById('f-tagline').value = business.tagline || '';
+      document.getElementById('f-subheadline').value = business.subheadline || '';
+
+      reviews = Array.isArray(data.reviews) ? data.reviews.slice() : [];
+      towns = Array.isArray(data.service_area) ? data.service_area.slice() : [];
+      gallery = Array.isArray(data.gallery) ? data.gallery.slice() : [];
+      beforeAfter = data.before_after || beforeAfter;
+
+      renderReviews();
+      renderTowns();
+      renderGallery();
+    })
+    .catch((err) => {
+      console.error('Could not load content.json', err);
+      document.getElementById('loadErrorBox').innerHTML =
+        '<div class="load-error">Could not load content.json from the site folder ' +
+        '(' + err.message + '). You can still fill in fields below — clicking ' +
+        '"Save all changes" will build a brand new content.json from scratch. ' +
+        'If this keeps happening, make sure admin/index.html and content.json ' +
+        'are both inside the same project folder and you are viewing this page ' +
+        'through a local server rather than double-clicking the file.</div>';
+      renderReviews();
+      renderTowns();
+      renderGallery();
+    });
+}
+
+// ---- Reviews tab ----
+const reviewList = document.getElementById('reviewList');
+
+function renderReviews() {
+  reviewList.innerHTML = '';
+  reviews.forEach((review, index) => {
+    const card = document.createElement('div');
+    card.className = 'admin-card';
+    const stars = '★'.repeat(review.stars || 0) + '☆'.repeat(5 - (review.stars || 0));
+    card.innerHTML =
+      '<p>"' + review.text + '"</p>' +
+      '<p class="meta">— ' + review.author + ', ' + review.location + ' — ' + stars + '</p>' +
+      '<div class="row-actions">' +
+      '<button class="btn-edit">Edit</button>' +
+      '<button class="btn-delete">Delete</button>' +
+      '</div>';
+    card.querySelector('.btn-edit').addEventListener('click', () => openReviewEditForm(card, index));
+    card.querySelector('.btn-delete').addEventListener('click', () => {
+      if (confirm('Are you sure?')) {
+        reviews.splice(index, 1);
+        renderReviews();
+      }
+    });
+    reviewList.appendChild(card);
+  });
+}
+
+function openReviewEditForm(card, index) {
+  const review = reviews[index];
+  card.innerHTML =
+    '<div class="edit-form">' +
+    '<textarea rows="3" class="edit-text">' + review.text + '</textarea>' +
+    '<input type="text" class="edit-author" value="' + review.author + '" placeholder="Author name">' +
+    '<input type="text" class="edit-location" value="' + review.location + '" placeholder="Location">' +
+    '<select class="edit-stars">' +
+    [1, 2, 3, 4, 5].map((n) => '<option value="' + n + '"' + (n === review.stars ? ' selected' : '') + '>' + n + ' star' + (n > 1 ? 's' : '') + '</option>').join('') +
+    '</select>' +
+    '<div class="row-actions">' +
+    '<button class="btn-save-review">Save</button>' +
+    '<button class="btn-cancel">Cancel</button>' +
+    '</div></div>';
+
+  card.querySelector('.btn-save-review').addEventListener('click', () => {
+    reviews[index] = {
+      text: card.querySelector('.edit-text').value,
+      author: card.querySelector('.edit-author').value,
+      location: card.querySelector('.edit-location').value,
+      stars: parseInt(card.querySelector('.edit-stars').value, 10),
+    };
+    renderReviews();
+  });
+  card.querySelector('.btn-cancel').addEventListener('click', renderReviews);
+}
+
+document.getElementById('addReviewBtn').addEventListener('click', () => {
+  const card = document.createElement('div');
+  card.className = 'admin-card';
+  card.innerHTML =
+    '<div class="edit-form">' +
+    '<textarea rows="3" class="edit-text" placeholder="Quote text"></textarea>' +
+    '<input type="text" class="edit-author" placeholder="Author name">' +
+    '<input type="text" class="edit-location" placeholder="Location">' +
+    '<select class="edit-stars">' +
+    [1, 2, 3, 4, 5].map((n) => '<option value="' + n + '"' + (n === 5 ? ' selected' : '') + '>' + n + ' star' + (n > 1 ? 's' : '') + '</option>').join('') +
+    '</select>' +
+    '<div class="row-actions">' +
+    '<button class="btn-save-review">Add</button>' +
+    '<button class="btn-cancel">Cancel</button>' +
+    '</div></div>';
+
+  card.querySelector('.btn-save-review').addEventListener('click', () => {
+    const text = card.querySelector('.edit-text').value.trim();
+    const author = card.querySelector('.edit-author').value.trim();
+    if (!text || !author) return;
+    reviews.unshift({
+      text: text,
+      author: author,
+      location: card.querySelector('.edit-location').value.trim(),
+      stars: parseInt(card.querySelector('.edit-stars').value, 10),
+    });
+    renderReviews();
+  });
+  card.querySelector('.btn-cancel').addEventListener('click', renderReviews);
+
+  reviewList.prepend(card);
+});
+
+// ---- Service area tab ----
+const townList = document.getElementById('townList');
+
+function renderTowns() {
+  townList.innerHTML = '';
+  towns.forEach((town, index) => {
+    const li = document.createElement('li');
+    li.innerHTML = '<span>' + town + '</span> <button class="town-delete" aria-label="Remove ' + town + '">✕</button>';
+    li.querySelector('.town-delete').addEventListener('click', () => {
+      towns.splice(index, 1);
+      renderTowns();
+    });
+    townList.appendChild(li);
+  });
+}
+
+document.getElementById('addTownBtn').addEventListener('click', () => {
+  const input = document.getElementById('newTownInput');
+  const town = input.value.trim();
+  if (!town) return;
+  towns.push(town);
+  input.value = '';
+  renderTowns();
+});
+document.getElementById('newTownInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    document.getElementById('addTownBtn').click();
+  }
+});
+
+// ---- Photo gallery tab ----
+const galleryAdminGrid = document.getElementById('galleryAdminGrid');
+
+function renderGallery() {
+  galleryAdminGrid.innerHTML = '';
+  gallery.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'gallery-admin-item';
+    card.innerHTML =
+      '<img src="' + item.src + '" alt="' + (item.label || 'Job photo') + '">' +
+      '<input type="text" class="gallery-label-input" value="' + (item.label || '') + '" placeholder="Label (e.g. Before)">' +
+      '<p class="hint-small">Also save this photo to your images/gallery/ folder and send it to Jacob along with content.json.</p>' +
+      '<button class="gallery-delete">Delete</button>';
+
+    card.querySelector('.gallery-label-input').addEventListener('input', (e) => {
+      gallery[index].label = e.target.value;
+    });
+    card.querySelector('.gallery-delete').addEventListener('click', () => {
+      if (confirm('Are you sure?')) {
+        gallery.splice(index, 1);
+        renderGallery();
+      }
+    });
+    galleryAdminGrid.appendChild(card);
+  });
+}
+
+document.getElementById('photoUpload').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    // Preview uses the data URL immediately; the real file still needs to be
+    // dropped into images/gallery/ by hand before the live site can show it.
+    gallery.push({ src: 'images/gallery/' + file.name, label: '', preview: reader.result });
+    renderGalleryWithPreviews();
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+});
+
+// Same as renderGallery but uses the in-memory preview data URL for any
+// item that was just uploaded and doesn't exist in images/gallery/ yet.
+function renderGalleryWithPreviews() {
+  galleryAdminGrid.innerHTML = '';
+  gallery.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'gallery-admin-item';
+    card.innerHTML =
+      '<img src="' + (item.preview || item.src) + '" alt="' + (item.label || 'Job photo') + '">' +
+      '<input type="text" class="gallery-label-input" value="' + (item.label || '') + '" placeholder="Label (e.g. Before)">' +
+      '<p class="hint-small">Also save this photo to your images/gallery/ folder and send it to Jacob along with content.json.</p>' +
+      '<button class="gallery-delete">Delete</button>';
+
+    card.querySelector('.gallery-label-input').addEventListener('input', (e) => {
+      gallery[index].label = e.target.value;
+    });
+    card.querySelector('.gallery-delete').addEventListener('click', () => {
+      if (confirm('Are you sure?')) {
+        gallery.splice(index, 1);
+        renderGalleryWithPreviews();
+      }
+    });
+    galleryAdminGrid.appendChild(card);
+  });
+}
+
+// ---- Save all changes ----
+document.getElementById('saveAllBtn').addEventListener('click', () => {
+  const updated = {
+    business: {
+      name: document.getElementById('f-name').value,
+      phone: document.getElementById('f-phone').value,
+      phone_href: document.getElementById('f-phone-href').value,
+      instagram: document.getElementById('f-instagram').value,
+      email: document.getElementById('f-email').value,
+      tagline: document.getElementById('f-tagline').value,
+      subheadline: document.getElementById('f-subheadline').value,
+    },
+    service_area: towns.slice(),
+    reviews: reviews.slice(),
+    gallery: gallery.map((item) => ({ src: item.src, label: item.label || '' })),
+    before_after: beforeAfter,
+  };
+
+  const blob = new Blob([JSON.stringify(updated, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'content.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  const msg = document.getElementById('saveMessage');
+  msg.textContent = 'content.json downloaded. Send this file to Jacob or drop it into your project folder and redeploy.';
+  setTimeout(() => { msg.textContent = ''; }, 8000);
+});
+
+// ---- Init ----
+loadAdminContent();
+</script>
+</body>
+</html>

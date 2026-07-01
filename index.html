@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Low Country Shine Pressure Washing | Charleston SC</title>
+<meta name="description" content="Low Country Shine Pressure Washing — where excellence is the #1 priority. Serving Charleston SC and the Lowcountry. Free quotes on driveways, siding, decks, roofs & more.">
+
+<!-- SEO — search engine + social sharing tags. Edit the image
+     URLs if og-image.jpg gets replaced with a real photo. -->
+<meta name="robots" content="index, follow">
+<meta name="geo.region" content="US-SC">
+<meta name="geo.placename" content="Charleston, South Carolina">
+
+<!-- Open Graph (social sharing) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Low Country Shine Pressure Washing | Charleston SC">
+<meta property="og:description" content="Charleston's premier residential & commercial pressure washing — where excellence is the #1 priority. Free quotes, same day response.">
+<meta property="og:image" content="https://lowcountryshine.com/images/after.jpg">
+<meta property="og:url" content="https://lowcountryshine.com">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Low Country Shine | Pressure Washing Charleston SC">
+<meta name="twitter:description" content="Professional pressure washing in Charleston & the Lowcountry.">
+<meta name="twitter:image" content="https://lowcountryshine.com/images/after.jpg">
+
+<!-- Canonical -->
+<link rel="canonical" href="https://lowcountryshine.com">
+
+<!-- ===================================================
+     FONTS — change these two links if you want different
+     fonts later. Get more at fonts.google.com
+=================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- =========================================================
+     NAV BAR
+     EDIT: business name, phone number
+========================================================= -->
+<header class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="logo" id="navLogo">
+      <img src="images/logo.png" alt="Low Country Shine Pressure Washing" class="nav-logo-img">
+    </a>
+    <nav class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#process">How It Works</a>
+      <a href="#area">Service Area</a>
+      <a href="#reviews">Reviews</a>
+    </nav>
+    <a href="tel:+18435550123" class="nav-phone" data-phone>📞 (843) 555-0123</a>
+  </div>
+</header>
+
+<!-- =========================================================
+     HERO — split layout: text left, 3D model right
+     EDIT: headline and subheadline text below
+========================================================= -->
+<section id="top" class="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-inner">
+    <div class="hero-content">
+      <p class="eyebrow">Charleston &amp; the Lowcountry</p>
+      <h1 id="heroTitle">Tide goes out.<br>Grime goes with it.</h1>
+      <p class="hero-sub" id="heroSubheadline">Residential &amp; commercial pressure washing for driveways, siding, decks, roofs, and everything salt air leaves behind.</p>
+      <div class="hero-cta">
+        <a href="#quote" class="btn btn-primary">Get a Free Quote</a>
+        <a href="tel:+18435550123" class="btn btn-ghost" data-phone>Call (843) 555-0123</a>
+      </div>
+    </div>
+    <!-- 3D canvas — Three.js renders here automatically -->
+    <div class="hero-3d" id="hero3dWrap">
+      <canvas id="threeCanvas"></canvas>
+      <p class="canvas-hint">drag to rotate</p>
+    </div>
+  </div>
+  <div class="hero-wave">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0,40 C360,100 1080,0 1440,60 L1440,120 L0,120 Z"></path></svg>
+  </div>
+</section>
+
+<!-- =========================================================
+     BEFORE / AFTER SLIDER — the signature element.
+     Drag the handle to compare. Replace the two images
+     in images/before.jpg and images/after.jpg with real photos
+     of the SAME spot, dirty vs clean, same angle.
+========================================================= -->
+<section class="reveal-section">
+  <div class="reveal-intro">
+    <p class="eyebrow">See the difference</p>
+    <h2 class="fade-in">Drag to compare</h2>
+  </div>
+  <div class="ba-slider fade-in" id="baSlider">
+    <div class="ba-after">
+      <img src="images/after.jpg" alt="Clean driveway after pressure washing" draggable="false" id="baAfterImg">
+    </div>
+    <div class="ba-before" id="baBefore">
+      <img src="images/before.jpg" alt="Dirty driveway before pressure washing" draggable="false" id="baBeforeImg">
+    </div>
+    <div class="ba-handle" id="baHandle">
+      <span class="ba-arrows">⟷</span>
+    </div>
+    <span class="ba-label ba-label-before">Before</span>
+    <span class="ba-label ba-label-after">After</span>
+  </div>
+</section>
+
+<!-- =========================================================
+     SERVICES
+     EDIT: add/remove service cards freely. Each <article>
+     is one card — copy/paste the block to add a new service.
+========================================================= -->
+<section id="services" class="services">
+  <p class="eyebrow center">What we clean</p>
+  <h2 class="center fade-in">Residential &amp; commercial</h2>
+
+  <div class="service-grid">
+    <article class="service-card fade-in">
+      <div class="service-icon">🏠</div>
+      <h3>House Washing</h3>
+      <p>Soft-wash siding, brick, and stucco — removes mildew and pollen without damaging paint.</p>
+    </article>
+    <article class="service-card fade-in">
+      <div class="service-icon">🚗</div>
+      <h3>Driveways &amp; Walkways</h3>
+      <p>Concrete, pavers, and brick — lifts oil stains, algae, and years of buildup.</p>
+    </article>
+    <article class="service-card fade-in">
+      <div class="service-icon">🪵</div>
+      <h3>Decks &amp; Fences</h3>
+      <p>Wood-safe washing that preps surfaces for staining or sealing.</p>
+    </article>
+    <article class="service-card fade-in">
+      <div class="service-icon">🏢</div>
+      <h3>Commercial Storefronts</h3>
+      <p>Sidewalks, entryways, and building exteriors — scheduled around your business hours.</p>
+    </article>
+    <article class="service-card fade-in">
+      <div class="service-icon">🛖</div>
+      <h3>Roof Washing</h3>
+      <p>Low-pressure treatment that removes black streaks without harming shingles.</p>
+    </article>
+    <article class="service-card fade-in">
+      <div class="service-icon">🛟</div>
+      <h3>Docks &amp; Pool Decks</h3>
+      <p>Built for the Lowcountry — built to handle salt, algae, and humidity year-round.</p>
+    </article>
+  </div>
+</section>
+
+<!-- =========================================================
+     PROCESS
+     EDIT: step text only — keep at 4 steps or add more
+     by copying a .step block and updating the number.
+========================================================= -->
+<section id="process" class="process">
+  <p class="eyebrow center">How it works</p>
+  <h2 class="center fade-in">Four steps, zero hassle</h2>
+  <div class="steps">
+    <div class="step fade-in">
+      <span class="step-num">01</span>
+      <h3>Get a quote</h3>
+      <p>Fill out the form or call — most quotes are turned around same day.</p>
+    </div>
+    <div class="step fade-in">
+      <span class="step-num">02</span>
+      <h3>We schedule</h3>
+      <p>Pick a time that works. We text a reminder the day before.</p>
+    </div>
+    <div class="step fade-in">
+      <span class="step-num">03</span>
+      <h3>We clean</h3>
+      <p>Fully insured crew, careful around plants, vehicles, and outdoor furniture.</p>
+    </div>
+    <div class="step fade-in">
+      <span class="step-num">04</span>
+      <h3>You inspect</h3>
+      <p>We walk the property with you before we call it done.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     SERVICE AREA
+     EDIT: town list — add/remove towns as needed
+========================================================= -->
+<section id="area" class="area">
+  <div class="area-inner">
+    <div>
+      <p class="eyebrow">Where we work</p>
+      <h2 class="fade-in">Charleston &amp; the surrounding Lowcountry</h2>
+      <ul class="area-list" id="areaList">
+        <li>Charleston</li>
+        <li>Mount Pleasant</li>
+        <li>James Island</li>
+        <li>Johns Island</li>
+        <li>Daniel Island</li>
+        <li>Summerville</li>
+        <li>West Ashley</li>
+        <li>Folly Beach</li>
+      </ul>
+    </div>
+    <div class="area-map-placeholder">
+      <!-- Swap this div for an embedded Google Map iframe if you want -->
+      <p>Map placeholder<br><span>— embed a Google Map here later —</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     REVIEWS
+     EDIT: swap in real reviews from Google/Facebook once you
+     have them. Add more by copying a .review-card block.
+========================================================= -->
+<section id="reviews" class="reviews">
+  <p class="eyebrow center">What neighbors say</p>
+  <h2 class="center fade-in">Reviews</h2>
+  <div class="review-grid" id="reviewGrid">
+    <div class="review-card fade-in">
+      <p>"Driveway looked brand new. Showed up on time, fast, and the price was fair."</p>
+      <span>— Placeholder Review, Mount Pleasant</span>
+    </div>
+    <div class="review-card fade-in">
+      <p>"Used them for our storefront on King St. Easy to schedule, great communication."</p>
+      <span>— Placeholder Review, Charleston</span>
+    </div>
+    <div class="review-card fade-in">
+      <p>"Soft-washed our siding before listing the house — sold within a week."</p>
+      <span>— Placeholder Review, James Island</span>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     PHOTO GALLERY
+     EDIT: nothing here directly — this section is populated
+     from the content.json "gallery" array via script.js. It
+     stays hidden (style="display:none") until there is at
+     least one photo. Client adds photos through /admin.
+========================================================= -->
+<section id="gallery" class="gallery" style="display:none">
+  <p class="eyebrow center">Our work</p>
+  <h2 class="center fade-in">Job photos</h2>
+  <div class="gallery-grid fade-in" id="galleryGrid"></div>
+</section>
+
+<!-- Lightbox overlay — full-screen photo viewer opened by clicking
+     a gallery thumbnail. Closes on ✕ click, outside click, or Escape. -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">✕</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+  <button class="lightbox-prev" id="lightboxPrev" aria-label="Previous">‹</button>
+  <button class="lightbox-next" id="lightboxNext" aria-label="Next">›</button>
+</div>
+
+<!-- =========================================================
+     QUOTE FORM + CONTACT
+     EDIT: this form currently just shows a thank-you message.
+     To actually receive submissions, see README.md — easiest
+     no-code option is Formspree (free tier, 5 min setup).
+========================================================= -->
+<section id="quote" class="quote">
+  <div class="quote-inner">
+    <div class="quote-text">
+      <p class="eyebrow">Free, no-obligation</p>
+      <h2 class="fade-in">Get your quote</h2>
+      <p>Tell us what needs cleaning and we'll get back to you same day.</p>
+      <div class="quote-contacts">
+        <a href="tel:+18435550123" data-phone>📞 (843) 555-0123</a>
+        <a href="https://instagram.com/lowcountryshine" target="_blank" rel="noopener" id="instagramLink">📷 @lowcountryshine</a>
+      </div>
+    </div>
+    <form class="quote-form" id="quoteForm">
+      <label>Name
+        <input type="text" name="name" required>
+      </label>
+      <label>Phone
+        <input type="tel" name="phone" required>
+      </label>
+      <label>Email
+        <input type="email" name="email">
+      </label>
+      <label>What needs cleaning?
+        <textarea name="message" rows="4" placeholder="e.g. driveway + house siding"></textarea>
+      </label>
+      <button type="submit" class="btn btn-primary">Send Request</button>
+      <p class="form-note" id="formNote"></p>
+    </form>
+  </div>
+</section>
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+<footer class="footer">
+  <img src="images/logo.png" alt="Low Country Shine Pressure Washing" class="footer-logo">
+  <p>© <span id="year"></span> <span id="footerBusinessName">Low Country Shine</span>. Charleston, SC.</p>
+</footer>
+
+<!-- Three.js — powers the 3D model in the hero -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

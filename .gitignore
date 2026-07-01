@@ -1,0 +1,7 @@
+# macOS noise
+.DS_Store
+
+# One-off zip snapshots and extracted old-version folders — not part of the site
+*.zip
+lowcountry-shine-final/
+lowcountry-shine-final 2/

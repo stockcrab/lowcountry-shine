@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --check /Users/jacobsomsky/Desktop/lowcountry-shine/script.js)",
+      "Bash(python3 *)",
+      "Bash(node --check /tmp/admin_script_check.js)",
+      "Bash(awk '$1>1')",
+      "Skill(run)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(node test_site.js)",
+      "Bash(zip -r lowcountry-shine-final.zip . -x \"*.DS_Store\" -x \"CLAUDE.md\" -x \"claude-code-prompt.md\" -x \"*.gitkeep\")",
+      "Bash(node --check script.js)",
+      "Bash(npx --yes playwright --version)",
+      "Bash(node *)",
+      "Read(//tmp/**)",
+      "Bash(npx playwright *)",
+      "Bash(pkill -f \"http.server 8765\")",
+      "Bash(echo \"green-scan exit: $?\")",
+      "Bash(echo \"important-scan exit: $?\")",
+      "Read(//Users/jacobsomsky/node_modules/**)",
+      "Bash(npm ls *)",
+      "Bash(zip -q dark-version-backup.zip index.html styles.css script.js)",
+      "Bash(cp /private/tmp/claude-501/-Users-jacobsomsky-Desktop-lowcountry-shine/540fe753-3bd9-4436-b6b8-7e0fd3481515/scratchpad/lightblue/styles.css /private/tmp/claude-501/-Users-jacobsomsky-Desktop-lowcountry-shine/540fe753-3bd9-4436-b6b8-7e0fd3481515/scratchpad/lightblue/index.html /private/tmp/claude-501/-Users-jacobsomsky-Desktop-lowcountry-shine/540fe753-3bd9-4436-b6b8-7e0fd3481515/scratchpad/lightblue/script.js /Users/jacobsomsky/Desktop/lowcountry-shine/)",
+      "Bash(zip -qr light-blue-version-backup.zip index.html styles.css script.js content.json admin images README.md)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit -q -m 'Light-blue version of Low Country Shine site \\(restored 2026-07-01\\) *)"
+    ]
+  }
+}
