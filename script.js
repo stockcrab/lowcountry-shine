@@ -83,7 +83,7 @@ document.querySelectorAll('.fade-in').forEach((el) => fadeObserver.observe(el));
 // hardcoding the placeholder number in the error message below.
 function currentPhone() {
   const el = document.querySelector('[data-phone]');
-  return el ? el.textContent.trim() : '(843) 555-0123';
+  return el ? el.textContent.trim() : '(843) 708-5972';
 }
 
 const form = document.getElementById('quoteForm');
