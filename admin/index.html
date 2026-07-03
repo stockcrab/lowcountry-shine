@@ -433,7 +433,7 @@
       <!-- PHOTO GALLERY TAB -->
       <section id="tab-gallery" class="tab-panel" style="display:none">
         <h2>Photo Gallery</h2>
-        <p class="hint">Photos are saved locally in this browser. Send your updated content.json file to Jacob to publish changes to the live site.</p>
+        <p class="hint">Uploaded photos publish to the live site when you hit "Save all changes" below.</p>
         <div class="gallery-admin-grid" id="galleryAdminGrid"></div>
         <label class="upload-btn">
           + Upload photo
@@ -468,7 +468,13 @@
 // =========================================================
 
 // ---- Password protection ----
-// EDIT: change this line to set a new admin password.
+// EDIT: change this line to set a new admin password. This is only the
+// UX gate that hides the panel from casual visitors — the real
+// enforcement happens server-side in worker.js, which checks the same
+// password against its own ADMIN_PASSWORD secret before it will push
+// anything to GitHub. If you change the password here, also update it
+// on the Worker (`npx wrangler secret put ADMIN_PASSWORD`), or saves
+// will start failing with "Incorrect password."
 const ADMIN_PASSWORD = 'shine2025';
 
 const loginScreen = document.getElementById('loginScreen');
@@ -497,6 +503,9 @@ loginForm.addEventListener('submit', (e) => {
   e.preventDefault();
   if (passwordInput.value === ADMIN_PASSWORD) {
     sessionStorage.setItem('lcs_auth', 'true');
+    // Kept so "Save all changes" can send it to the Worker for the real,
+    // server-side check — the panel never trusts its own client-side gate.
+    sessionStorage.setItem('lcs_pw', passwordInput.value);
     loginError.textContent = '';
     showPanel();
   } else {
@@ -512,6 +521,7 @@ loginForm.addEventListener('submit', (e) => {
 
 document.getElementById('logoutBtn').addEventListener('click', () => {
   sessionStorage.removeItem('lcs_auth');
+  sessionStorage.removeItem('lcs_pw');
   showLogin();
 });
 
@@ -703,7 +713,6 @@ function renderGallery() {
     card.innerHTML =
       '<img src="' + item.src + '" alt="' + (item.label || 'Job photo') + '">' +
       '<input type="text" class="gallery-label-input" value="' + (item.label || '') + '" placeholder="Label (e.g. Before)">' +
-      '<p class="hint-small">Also save this photo to your images/gallery/ folder and send it to Jacob along with content.json.</p>' +
       '<button class="gallery-delete">Delete</button>';
 
     card.querySelector('.gallery-label-input').addEventListener('input', (e) => {
@@ -719,14 +728,23 @@ function renderGallery() {
   });
 }
 
+// Strips anything but letters/numbers/dash/underscore/dot from a
+// filename, and prefixes a timestamp so two different uploads named
+// e.g. "photo.jpg" never collide on the live site.
+function safeFilename(name) {
+  const cleaned = name.replace(/[^a-zA-Z0-9._-]/g, '-');
+  return Date.now() + '-' + cleaned;
+}
+
 document.getElementById('photoUpload').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = () => {
-    // Preview uses the data URL immediately; the real file still needs to be
-    // dropped into images/gallery/ by hand before the live site can show it.
-    gallery.push({ src: 'images/gallery/' + file.name, label: '', preview: reader.result });
+    // preview holds the full data URL (used for on-screen preview AND
+    // as the actual upload payload on save — see saveAllBtn handler).
+    const filename = safeFilename(file.name);
+    gallery.push({ src: 'images/gallery/' + filename, label: '', preview: reader.result });
     renderGalleryWithPreviews();
   };
   reader.readAsDataURL(file);
@@ -743,7 +761,7 @@ function renderGalleryWithPreviews() {
     card.innerHTML =
       '<img src="' + (item.preview || item.src) + '" alt="' + (item.label || 'Job photo') + '">' +
       '<input type="text" class="gallery-label-input" value="' + (item.label || '') + '" placeholder="Label (e.g. Before)">' +
-      '<p class="hint-small">Also save this photo to your images/gallery/ folder and send it to Jacob along with content.json.</p>' +
+      (item.preview ? '<p class="hint-small">Will upload when you hit Save all changes.</p>' : '') +
       '<button class="gallery-delete">Delete</button>';
 
     card.querySelector('.gallery-label-input').addEventListener('input', (e) => {
@@ -760,7 +778,14 @@ function renderGalleryWithPreviews() {
 }
 
 // ---- Save all changes ----
-document.getElementById('saveAllBtn').addEventListener('click', () => {
+// Pushes content.json and any newly-uploaded photos straight to GitHub
+// via worker.js's /api/save-content endpoint. A GitHub Actions workflow
+// (.github/workflows/deploy.yml) then deploys the live site automatically
+// on that push — there's no separate "now redeploy" step.
+const saveAllBtn = document.getElementById('saveAllBtn');
+const saveMessage = document.getElementById('saveMessage');
+
+saveAllBtn.addEventListener('click', () => {
   const updated = {
     business: {
       name: document.getElementById('f-name').value,
@@ -777,19 +802,51 @@ document.getElementById('saveAllBtn').addEventListener('click', () => {
     before_after: beforeAfter,
   };
 
-  const blob = new Blob([JSON.stringify(updated, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'content.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  // Only newly-uploaded photos (still holding a .preview data URL) need
+  // to be sent — anything already in content.json is already on GitHub.
+  const photos = gallery
+    .filter((item) => item.preview)
+    .map((item) => ({
+      path: item.src,
+      // Strip the "data:image/jpeg;base64," prefix — the Worker wants
+      // just the raw base64 payload for GitHub's API.
+      base64: item.preview.split(',')[1],
+    }));
 
-  const msg = document.getElementById('saveMessage');
-  msg.textContent = 'content.json downloaded. Send this file to Jacob or drop it into your project folder and redeploy.';
-  setTimeout(() => { msg.textContent = ''; }, 8000);
+  saveAllBtn.disabled = true;
+  saveAllBtn.textContent = 'Saving…';
+  saveMessage.textContent = '';
+  saveMessage.style.color = '';
+
+  fetch('/api/save-content', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Admin-Password': sessionStorage.getItem('lcs_pw') || '',
+    },
+    body: JSON.stringify({ content: updated, photos: photos }),
+  })
+    .then((res) => res.json().then((data) => ({ ok: res.ok, data: data })))
+    .then((result) => {
+      if (result.ok) {
+        // Newly-uploaded photos are now committed — drop their preview
+        // flag so a second Save doesn't try to re-upload them.
+        gallery.forEach((item) => { delete item.preview; });
+        renderGallery();
+        saveMessage.textContent = 'Saved — live on the site in about a minute.';
+      } else {
+        saveMessage.style.color = '#c0392b';
+        saveMessage.textContent = 'Could not save: ' + (result.data.error || 'unknown error');
+      }
+    })
+    .catch(() => {
+      saveMessage.style.color = '#c0392b';
+      saveMessage.textContent = 'Could not save — check your internet connection and try again.';
+    })
+    .finally(() => {
+      saveAllBtn.disabled = false;
+      saveAllBtn.textContent = 'Save all changes';
+    });
 });
 
 // ---- Init ----

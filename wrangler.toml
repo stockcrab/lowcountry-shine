@@ -1,8 +1,11 @@
-# Cloudflare deploy config — tells `wrangler deploy` to serve this folder
-# as static assets. No build step, no server code. Do not add a [build]
-# section or main worker script here unless the site stops being static.
+# Cloudflare deploy config. Serves this folder as static assets for every
+# request EXCEPT POST /api/save-content, which worker.js handles directly
+# (the admin panel's "push straight to GitHub" feature). Still no build
+# step — worker.js is plain JS, no bundler needed.
 name = "lowcountry-shine"
 compatibility_date = "2026-07-01"
+main = "worker.js"
 
 [assets]
 directory = "."
+binding = "ASSETS"

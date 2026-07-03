@@ -114,18 +114,67 @@ The `/admin` panel reads and writes this file through a simple UI.
 
 ### /admin panel requirements:
 - Lives at `/admin/index.html`
-- Password protected — simple client-side password check.
-  Default password: `shine2025` (hardcoded in the HTML — client can change it by
-  editing that one line, or Jacob can update it for them)
+- Password protected. Two layers (added 2026-07):
+  - Client-side check in the HTML (`ADMIN_PASSWORD` constant) — this is
+    just a UX gate that hides the panel from casual visitors, not real
+    security, since anyone can read it via view-source.
+  - Real enforcement is server-side in `worker.js`, which checks the
+    same password against a Worker secret (`ADMIN_PASSWORD`) before it
+    will push anything to GitHub. If you change the password, update
+    BOTH: the HTML constant AND `npx wrangler secret put ADMIN_PASSWORD`
+    — they must match or saves will fail with "Incorrect password."
 - Shows clearly labeled form fields for every key in content.json
-- Photo upload: file input that previews the image, writes it to images/gallery/,
-  and adds an entry to content.json gallery array
-- "Save changes" button downloads an updated content.json for the client to
-  hand back to Jacob, OR (if GitHub integration is set up) commits directly
+- Photo upload: file input that previews the image and holds it in memory
+  as a data URL until Save is clicked
+- "Save all changes" button POSTs to `/api/save-content` (handled by
+  `worker.js`), which commits the updated content.json and any new
+  photos directly to the GitHub repo using a fine-grained PAT stored as
+  a Worker secret (`GITHUB_TOKEN`, Contents: Read and write, scoped to
+  just this repo). That push is what goes live — see the ARCHITECTURE
+  section below for the full deploy chain.
 - Clean, mobile-friendly UI so the client can use it from their phone
 - The client CANNOT access or edit: index.html, styles.css, script.js, CLAUDE.md
 
 ---
+
+## ARCHITECTURE — ADMIN PANEL → LIVE SITE (added 2026-07)
+
+The site runs as a Cloudflare Worker (`main = "worker.js"` in
+wrangler.toml), not classic static Pages. `worker.js` serves the static
+site for every request except `POST /api/save-content`, which it handles
+itself for the admin panel's direct-to-GitHub save feature.
+
+Full chain when the client hits "Save all changes":
+1. Browser POSTs the updated content + any new photos to `/api/save-content`
+   with the admin password in an `X-Admin-Password` header.
+2. `worker.js` checks that password against its `ADMIN_PASSWORD` secret,
+   then uses the GitHub Contents API (with its `GITHUB_TOKEN` secret) to
+   commit content.json and any new photos straight to `main`.
+3. That push triggers `.github/workflows/deploy.yml` (a GitHub Actions
+   workflow), which runs `npx wrangler deploy` — the same command used
+   manually throughout this project — authenticated with a
+   `CLOUDFLARE_API_TOKEN` repo secret.
+4. The site is live within roughly a minute of hitting Save.
+
+This deliberately does NOT try to deploy directly from the Worker itself
+(e.g. re-implementing Cloudflare's asset-upload protocol by hand) — that
+would be fragile custom engineering. GitHub Actions running the real
+`wrangler deploy` command is simpler and, based on this project's history,
+far more reliable than Cloudflare's own Git-integration build pipeline
+(which repeatedly took 5-9+ minutes just to start, or hung entirely).
+
+### Required secrets (none of these are ever committed to the repo):
+- Cloudflare Worker secret `ADMIN_PASSWORD` — set via
+  `npx wrangler secret put ADMIN_PASSWORD`
+- Cloudflare Worker secret `GITHUB_TOKEN` — a GitHub fine-grained PAT,
+  scoped to only this repo, `Contents: Read and write` permission only.
+  Set via `npx wrangler secret put GITHUB_TOKEN`
+- GitHub Actions repo secret `CLOUDFLARE_API_TOKEN` — a Cloudflare API
+  token with Workers Edit permission. Set at
+  github.com/stockcrab/lowcountry-shine/settings/secrets/actions
+
+`worker.js`, `wrangler.toml`, and `.github/` are all listed in
+`.assetsignore` so none of them are ever served as public site files.
 
 ## DESIGN SYSTEM — DO NOT ALTER WITHOUT JACOB'S INSTRUCTION
 

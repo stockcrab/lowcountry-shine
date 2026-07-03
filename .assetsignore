@@ -12,6 +12,8 @@
 CLAUDE.md
 README.md
 wrangler.toml
+worker.js
+.github/
 
 # Local-only backups — never meant to be public. Deploying via `wrangler
 # deploy` uploads whatever is physically in this folder (unlike the GitHub
