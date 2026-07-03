@@ -1,7 +1,7 @@
 {
   "business": {
     "name": "Low Country Shine",
-    "phone": "(843) 708-5972",
+    "phone": "(843)-708-5972",
     "phone_href": "+18437085972",
     "instagram": "lowcountryshine.pw",
     "email": "hello@lowcountryshine.com",
@@ -26,7 +26,7 @@
       "stars": 5
     },
     {
-      "text": "Used them for our storefront on King St. Easy to schedule, great communication.",
+      "text": "Used them for our storefront in Goose Creek. Easy to schedule, great communication.",
       "author": "Mike T.",
       "location": "Charleston",
       "stars": 5
@@ -38,7 +38,20 @@
       "stars": 5
     }
   ],
-  "gallery": [],
+  "gallery": [
+    {
+      "src": "images/gallery/1783086050581-driveway.jpeg",
+      "label": ""
+    },
+    {
+      "src": "images/gallery/1783086055595-side.jpeg",
+      "label": ""
+    },
+    {
+      "src": "images/gallery/1783086059020-sideafter.jpeg",
+      "label": ""
+    }
+  ],
   "before_after": {
     "before_src": "images/before.jpg",
     "before_alt": "Algae-streaked vinyl siding before soft washing",
