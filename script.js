@@ -207,8 +207,9 @@ function populateBusiness(business) {
     // or the image would get wiped out.
     const navLogoImg = document.querySelector('#navLogo img');
     if (navLogoImg) navLogoImg.alt = business.name + ' Pressure Washing';
+    // heroBrand is the hero logo <img> — update its alt text, not textContent.
     const heroBrand = document.getElementById('heroBrand');
-    if (heroBrand) heroBrand.textContent = business.name;
+    if (heroBrand) heroBrand.alt = business.name + ' Pressure Washing';
     const footerName = document.getElementById('footerBusinessName');
     if (footerName) footerName.textContent = business.name;
   }

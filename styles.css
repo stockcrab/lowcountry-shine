@@ -166,14 +166,15 @@ section h2.center, p.eyebrow.center { text-align: center; }
 .hero-content {
   color: var(--frost);
 }
-.hero-brand {
-  font-family: var(--font-body);
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--frost);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  margin: 0.3rem 0 0.9rem;
+.hero-logo {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  margin: 0.3rem auto 0.9rem;
+}
+@media (max-width: 480px) {
+  .hero-logo { max-width: 280px; }
 }
 .hero h1 {
   font-size: clamp(2.2rem, 4.5vw, 3.8rem);

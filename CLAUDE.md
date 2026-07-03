@@ -160,12 +160,16 @@ Fixed, frosted glass effect (backdrop-filter blur on marsh green background).
 Contains: logo (text), nav links (Services, How It Works, Service Area, Reviews),
 phone number. Mobile: hide nav links, keep logo and phone.
 
-### 2. HERO — SINGLE CENTERED COLUMN, NO IMAGE
-Centered: eyebrow text, H1 headline, subheadline paragraph, two CTA buttons.
-No hero image or 3D model — a rotating Three.js logo was tried and removed
-(2026-07) for feeling gimmicky and adding unneeded visual complexity. Keep
-it text-only; if a hero image is wanted later, use a real job photo that
-isn't already shown in the before/after slider directly below.
+### 2. HERO — SINGLE CENTERED COLUMN
+Centered: eyebrow text, logo image, H1 headline, subheadline paragraph,
+two CTA buttons. No 3D model — a rotating Three.js logo was tried and
+removed (2026-07) for feeling gimmicky and adding unneeded visual
+complexity; replaced with a static logo image (images/logo-hero.png,
+background removed via a local color-key script since the source photo
+had a flat uniform background — see scratchpad approach if redoing this).
+This is a separate, higher-resolution file from images/logo.png (used in
+the nav) — don't merge them, the nav version is intentionally smaller/
+lower-res and inverted to white; the hero version keeps original colors.
 Background: dark marsh green gradient with subtle radial light overlays.
 Wave SVG at bottom transitions to oyster background.
 
@@ -455,7 +459,7 @@ As of initial build:
 - [x] Scroll-triggered fade-in animations
 - [x] Nav scroll behavior (opacity + shadow on scroll)
 - [x] SEO meta tags (OG tags)
-- [x] Google Maps embed (general James Island location — swap for a real
-  Business Profile pin once the client has a Google listing)
+- [x] Google Maps embed (general downtown Charleston location — swap for a
+  real Business Profile pin once the client has a Google listing)
 - [x] Real before/after photos (siding job)
 - [ ] Real reviews (client to provide once jobs are done — still placeholder)
