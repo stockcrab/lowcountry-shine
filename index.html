@@ -56,7 +56,7 @@
       <a href="#area">Service Area</a>
       <a href="#reviews">Reviews</a>
     </nav>
-    <a href="tel:+18435550123" class="nav-phone" data-phone>📞 (843) 555-0123</a>
+    <a href="tel:+18435550123" class="nav-phone" data-phone>(843) 555-0123</a>
   </div>
 </header>
 
@@ -69,17 +69,13 @@
   <div class="hero-inner">
     <div class="hero-content">
       <p class="eyebrow">Charleston &amp; the Lowcountry</p>
+      <p class="hero-brand" id="heroBrand">Low Country Shine</p>
       <h1 id="heroTitle">Tide goes out.<br>Grime goes with it.</h1>
       <p class="hero-sub" id="heroSubheadline">Residential &amp; commercial pressure washing for driveways, siding, decks, roofs, and everything salt air leaves behind.</p>
       <div class="hero-cta">
         <a href="#quote" class="btn btn-primary">Get a Free Quote</a>
         <a href="tel:+18435550123" class="btn btn-ghost" data-phone>Call (843) 555-0123</a>
       </div>
-    </div>
-    <!-- 3D canvas — Three.js renders here automatically -->
-    <div class="hero-3d" id="hero3dWrap">
-      <canvas id="threeCanvas"></canvas>
-      <p class="canvas-hint">drag to rotate</p>
     </div>
   </div>
   <div class="hero-wave">
@@ -119,37 +115,31 @@
      is one card — copy/paste the block to add a new service.
 ========================================================= -->
 <section id="services" class="services">
-  <p class="eyebrow center">What we clean</p>
+  <p class="eyebrow center">What I clean</p>
   <h2 class="center fade-in">Residential &amp; commercial</h2>
 
   <div class="service-grid">
     <article class="service-card fade-in">
-      <div class="service-icon">🏠</div>
       <h3>House Washing</h3>
       <p>Soft-wash siding, brick, and stucco — removes mildew and pollen without damaging paint.</p>
     </article>
     <article class="service-card fade-in">
-      <div class="service-icon">🚗</div>
       <h3>Driveways &amp; Walkways</h3>
       <p>Concrete, pavers, and brick — lifts oil stains, algae, and years of buildup.</p>
     </article>
     <article class="service-card fade-in">
-      <div class="service-icon">🪵</div>
       <h3>Decks &amp; Fences</h3>
       <p>Wood-safe washing that preps surfaces for staining or sealing.</p>
     </article>
     <article class="service-card fade-in">
-      <div class="service-icon">🏢</div>
       <h3>Commercial Storefronts</h3>
       <p>Sidewalks, entryways, and building exteriors — scheduled around your business hours.</p>
     </article>
     <article class="service-card fade-in">
-      <div class="service-icon">🛖</div>
       <h3>Roof Washing</h3>
       <p>Low-pressure treatment that removes black streaks without harming shingles.</p>
     </article>
     <article class="service-card fade-in">
-      <div class="service-icon">🛟</div>
       <h3>Docks &amp; Pool Decks</h3>
       <p>Built for the Lowcountry — built to handle salt, algae, and humidity year-round.</p>
     </article>
@@ -172,18 +162,18 @@
     </div>
     <div class="step fade-in">
       <span class="step-num">02</span>
-      <h3>We schedule</h3>
-      <p>Pick a time that works. We text a reminder the day before.</p>
+      <h3>I schedule</h3>
+      <p>Pick a time that works. I text a reminder the day before.</p>
     </div>
     <div class="step fade-in">
       <span class="step-num">03</span>
-      <h3>We clean</h3>
-      <p>Fully insured crew, careful around plants, vehicles, and outdoor furniture.</p>
+      <h3>I clean</h3>
+      <p>Fully insured, careful around plants, vehicles, and outdoor furniture.</p>
     </div>
     <div class="step fade-in">
       <span class="step-num">04</span>
       <h3>You inspect</h3>
-      <p>We walk the property with you before we call it done.</p>
+      <p>I walk the property with you before I call it done.</p>
     </div>
   </div>
 </section>
@@ -195,7 +185,7 @@
 <section id="area" class="area">
   <div class="area-inner">
     <div>
-      <p class="eyebrow">Where we work</p>
+      <p class="eyebrow">Where I work</p>
       <h2 class="fade-in">Charleston &amp; the surrounding Lowcountry</h2>
       <ul class="area-list" id="areaList">
         <li>Charleston</li>
@@ -259,7 +249,7 @@
      least one photo. Client adds photos through /admin.
 ========================================================= -->
 <section id="gallery" class="gallery" style="display:none">
-  <p class="eyebrow center">Our work</p>
+  <p class="eyebrow center">My work</p>
   <h2 class="center fade-in">Job photos</h2>
   <div class="gallery-grid fade-in" id="galleryGrid"></div>
 </section>
@@ -275,22 +265,22 @@
 
 <!-- =========================================================
      QUOTE FORM + CONTACT
-     EDIT: this form currently just shows a thank-you message.
-     To actually receive submissions, see README.md — easiest
-     no-code option is Formspree (free tier, 5 min setup).
+     Submits to Formspree (endpoint below) via fetch() in script.js —
+     no page reload, inline success/error message. Formspree free tier
+     is 50 submissions/month; upgrade at formspree.io if that's not enough.
 ========================================================= -->
 <section id="quote" class="quote">
   <div class="quote-inner">
     <div class="quote-text">
       <p class="eyebrow">Free, no-obligation</p>
       <h2 class="fade-in">Get your quote</h2>
-      <p>Tell us what needs cleaning and we'll get back to you same day.</p>
+      <p>Tell me what needs cleaning and I'll get back to you same day.</p>
       <div class="quote-contacts">
-        <a href="tel:+18435550123" data-phone>📞 (843) 555-0123</a>
-        <a href="https://instagram.com/lowcountryshine" target="_blank" rel="noopener" id="instagramLink">📷 @lowcountryshine</a>
+        <a href="tel:+18435550123" data-phone>(843) 555-0123</a>
+        <a href="https://instagram.com/lowcountryshine" target="_blank" rel="noopener" id="instagramLink">@lowcountryshine</a>
       </div>
     </div>
-    <form class="quote-form" id="quoteForm">
+    <form class="quote-form" id="quoteForm" action="https://formspree.io/f/xpqgokkz" method="POST">
       <label>Name
         <input type="text" name="name" required>
       </label>
@@ -303,7 +293,7 @@
       <label>What needs cleaning?
         <textarea name="message" rows="4" placeholder="e.g. driveway + house siding"></textarea>
       </label>
-      <button type="submit" class="btn btn-primary">Send Request</button>
+      <button type="submit" class="btn btn-primary" id="quoteSubmitBtn">Send Request</button>
       <p class="form-note" id="formNote"></p>
     </form>
   </div>
@@ -317,8 +307,6 @@
   <p>© <span id="year"></span> <span id="footerBusinessName">Low Country Shine</span>. Charleston, SC.</p>
 </footer>
 
-<!-- Three.js — powers the 3D model in the hero -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

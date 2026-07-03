@@ -12,3 +12,11 @@
 CLAUDE.md
 README.md
 wrangler.toml
+
+# Local-only backups — never meant to be public. Deploying via `wrangler
+# deploy` uploads whatever is physically in this folder (unlike the GitHub
+# deploy, which only ever saw a clean git clone), so these must be listed
+# here too, not just in .gitignore.
+*.zip
+lowcountry-shine-final/
+lowcountry-shine-final 2/

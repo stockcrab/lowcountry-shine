@@ -74,267 +74,48 @@ const fadeObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.12 });
 document.querySelectorAll('.fade-in').forEach((el) => fadeObserver.observe(el));
 
-// =========================================================
-// THREE.JS — ROTATING LOGO HERO
-// Replaces the procedural pressure-washer geometry with the
-// real logo (images/logo.png) loaded as a texture on a plane,
-// rotating in 3D with a transparent background. Water spray
-// particles emit from the nozzle area of the logo artwork.
-// =========================================================
-(function () {
-  const wrap = document.getElementById('hero3dWrap');
-  const canvas = document.getElementById('threeCanvas');
-  if (!wrap || !canvas || typeof THREE === 'undefined') return;
-
-  // Detect WebGL support before spending any effort building the scene.
-  function webglSupported() {
-    try {
-      const c = document.createElement('canvas');
-      return !!(c.getContext('webgl') || c.getContext('experimental-webgl'));
-    } catch (e) {
-      return false;
-    }
-  }
-
-  if (!webglSupported()) {
-    // Graceful fallback: show the flat logo image so devices/browsers
-    // without WebGL still see something meaningful in the hero.
-    const fallback = document.createElement('img');
-    fallback.src = 'images/logo.png';
-    fallback.alt = 'Low Country Shine Pressure Washing';
-    fallback.style.cssText = 'width:80%;height:auto;object-fit:contain;opacity:0.85;margin:auto;display:block;';
-    wrap.innerHTML = '';
-    wrap.appendChild(fallback);
-    const hint = document.querySelector('.canvas-hint');
-    if (hint) hint.style.display = 'none';
-    return; // skip all Three.js setup below
-  }
-
-  // Respect the user's motion preference: skip auto-rotate/float/spray,
-  // drag-to-rotate still works since that's a deliberate user action.
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // --- Renderer ---
-  const W = wrap.clientWidth;
-  const H = wrap.clientHeight;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setSize(W, H);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x000000, 0); // fully transparent — CSS gradient shows through
-
-  // --- Scene + Camera ---
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(38, W / H, 0.1, 100);
-  camera.position.set(0, 0, 5);
-
-  // --- Lighting ---
-  scene.add(new THREE.AmbientLight(0xffffff, 1.0));
-  const key = new THREE.DirectionalLight(0xffffff, 0.6);
-  key.position.set(-2, 3, 4);
-  scene.add(key);
-  const rim = new THREE.DirectionalLight(0x7EC8F4, 0.4); // brand-light rim
-  rim.position.set(3, -2, 2);
-  scene.add(rim);
-
-  // --- Group that holds the logo plane, halo, and particles ---
-  const group = new THREE.Group();
-  scene.add(group);
-
-  // --- Load logo texture and build the plane ---
-  const loader = new THREE.TextureLoader();
-  loader.load(
-    'images/logo.png',
-    function (texture) {
-      const imgW = texture.image.naturalWidth || texture.image.width || 1160;
-      const imgH = texture.image.naturalHeight || texture.image.height || 700;
-      const aspect = imgW / imgH;
-
-      const planeW = 3.8;
-      const planeH = planeW / aspect;
-
-      const geo = new THREE.PlaneGeometry(planeW, planeH);
-      const mat = new THREE.MeshStandardMaterial({
-        map: texture,
-        transparent: true,
-        alphaTest: 0.05, // clips fully transparent pixels; raise if export has white fringing
-        side: THREE.DoubleSide,
-        roughness: 0.4,
-        metalness: 0.1,
-      });
-
-      const logoMesh = new THREE.Mesh(geo, mat);
-      group.add(logoMesh);
-
-      // Glow halo behind the logo for depth — slightly larger, brand blue
-      const haloGeo = new THREE.PlaneGeometry(planeW * 1.15, planeH * 1.15);
-      const haloMat = new THREE.MeshBasicMaterial({
-        color: 0x3D9FE0,
-        transparent: true,
-        opacity: 0.07,
-        side: THREE.DoubleSide,
-      });
-      const halo = new THREE.Mesh(haloGeo, haloMat);
-      halo.position.z = -0.08;
-      group.add(halo);
-
-      // Water spray particles — emitted from the nozzle tip in the artwork,
-      // approximately 60% across / 38% down the logo image.
-      const nozzleX = (0.60 - 0.5) * planeW;
-      const nozzleY = (0.5 - 0.38) * planeH;
-
-      const PARTICLE_COUNT = 280;
-      const positions = new Float32Array(PARTICLE_COUNT * 3);
-      const velocities = [];
-
-      function randomParticle(i) {
-        const spread = 0.06;
-        positions[i * 3]     = nozzleX + Math.random() * 0.04;
-        positions[i * 3 + 1] = nozzleY + (Math.random() - 0.5) * spread;
-        positions[i * 3 + 2] = 0.05;
-        velocities[i] = {
-          x: 0.035 + Math.random() * 0.035,
-          y: (Math.random() - 0.45) * 0.015,
-          z: (Math.random() - 0.5) * 0.008,
-        };
-      }
-
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
-        randomParticle(i);
-        positions[i * 3] += Math.random() * 1.4; // stagger so spray is visible immediately
-      }
-
-      const partGeo = new THREE.BufferGeometry();
-      partGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-      const partMat = new THREE.PointsMaterial({
-        color: 0x7EC8F4, // logo spray blue
-        size: 0.025,
-        transparent: true,
-        opacity: 0.75,
-        sizeAttenuation: true,
-      });
-
-      const particles = new THREE.Points(partGeo, partMat);
-      if (!reducedMotion) group.add(particles);
-
-      // --- Drag to rotate ---
-      let isDragging = false;
-      let prevX = 0, prevY = 0;
-      let targetRotY = 0;
-      let targetRotX = 0;
-      let autoRotate = !reducedMotion;
-
-      canvas.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        autoRotate = false;
-        prevX = e.clientX;
-        prevY = e.clientY;
-      });
-      window.addEventListener('mouseup', () => {
-        isDragging = false;
-        if (!reducedMotion) setTimeout(() => { autoRotate = true; }, 3000);
-      });
-      window.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        const dx = e.clientX - prevX;
-        const dy = e.clientY - prevY;
-        targetRotY += dx * 0.010;
-        targetRotX += dy * 0.006;
-        targetRotX = Math.max(-0.4, Math.min(0.4, targetRotX));
-        prevX = e.clientX;
-        prevY = e.clientY;
-      });
-
-      // Touch support
-      canvas.addEventListener('touchstart', (e) => {
-        isDragging = true;
-        autoRotate = false;
-        prevX = e.touches[0].clientX;
-        prevY = e.touches[0].clientY;
-        e.preventDefault();
-      }, { passive: false });
-      window.addEventListener('touchend', () => {
-        isDragging = false;
-        if (!reducedMotion) setTimeout(() => { autoRotate = true; }, 3000);
-      });
-      window.addEventListener('touchmove', (e) => {
-        if (!isDragging) return;
-        const dx = e.touches[0].clientX - prevX;
-        const dy = e.touches[0].clientY - prevY;
-        targetRotY += dx * 0.010;
-        targetRotX += dy * 0.006;
-        targetRotX = Math.max(-0.4, Math.min(0.4, targetRotX));
-        prevX = e.touches[0].clientX;
-        prevY = e.touches[0].clientY;
-      });
-
-      // --- Pause rendering when scrolled out of view ---
-      let isVisible = true;
-      const visObserver = new IntersectionObserver(
-        (entries) => { isVisible = entries[0].isIntersecting; },
-        { threshold: 0 }
-      );
-      visObserver.observe(wrap);
-
-      // --- Resize ---
-      window.addEventListener('resize', () => {
-        const w = wrap.clientWidth;
-        const h = wrap.clientHeight;
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-        renderer.setSize(w, h);
-      });
-
-      // --- Animation loop ---
-      const clock = new THREE.Clock();
-
-      function animate() {
-        requestAnimationFrame(animate);
-        if (!isVisible) return;
-
-        const t = clock.getElapsedTime();
-
-        if (autoRotate) targetRotY += 0.003;
-
-        group.rotation.y += (targetRotY - group.rotation.y) * 0.07;
-        group.rotation.x += (targetRotX - group.rotation.x) * 0.07;
-
-        if (!reducedMotion) {
-          group.position.y = Math.sin(t * 0.7) * 0.07;
-
-          const pos = partGeo.attributes.position.array;
-          for (let i = 0; i < PARTICLE_COUNT; i++) {
-            pos[i * 3]     += velocities[i].x;
-            pos[i * 3 + 1] += velocities[i].y;
-            pos[i * 3 + 2] += velocities[i].z;
-            if (pos[i * 3] > nozzleX + 2.2) randomParticle(i);
-          }
-          partGeo.attributes.position.needsUpdate = true;
-          partMat.opacity = 0.6 + Math.sin(t * 2.2) * 0.15;
-        }
-
-        renderer.render(scene, camera);
-      }
-
-      animate();
-    },
-    undefined,
-    function (err) {
-      // BUGFIX: if logo.png fails to load, fall back to text instead of
-      // leaving a blank canvas with no explanation.
-      console.error('Logo texture failed to load:', err);
-      wrap.innerHTML = '<p style="color:rgba(255,255,255,0.5);text-align:center;padding:2rem;font-size:0.85rem;">Low Country Shine</p>';
-    }
-  );
-})();
-
 // ---- Quote form ----
+// Submits via fetch() to Formspree so there's no page reload — the
+// <form action> attribute stays as a fallback in case JS fails to load.
+
+// Reads whatever phone number is currently on the page (populateBusiness
+// keeps [data-phone] elements in sync with content.json) instead of
+// hardcoding the placeholder number in the error message below.
+function currentPhone() {
+  const el = document.querySelector('[data-phone]');
+  return el ? el.textContent.trim() : '(843) 555-0123';
+}
+
 const form = document.getElementById('quoteForm');
 const note = document.getElementById('formNote');
+const submitBtn = document.getElementById('quoteSubmitBtn');
+
 form.addEventListener('submit', function (e) {
   e.preventDefault();
-  note.textContent = "Thanks — we'll text or call you shortly.";
-  form.reset();
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending…';
+  note.textContent = '';
+
+  fetch(form.action, {
+    method: 'POST',
+    body: new FormData(form),
+    headers: { Accept: 'application/json' },
+  })
+    .then((response) => {
+      if (response.ok) {
+        note.textContent = "Thanks — I'll text or call you shortly.";
+        form.reset();
+      } else {
+        note.textContent = 'Something went wrong — please call or text ' + currentPhone() + ' instead.';
+      }
+    })
+    .catch(() => {
+      note.textContent = 'Something went wrong — please call or text ' + currentPhone() + ' instead.';
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send Request';
+    });
 });
 
 // =========================================================
@@ -422,14 +203,12 @@ function populateBusiness(business) {
   if (!business) return;
 
   if (business.name) {
-    // BUGFIX: navLogo now wraps an <img> (the logo), not text — setting
-    // textContent would erase the logo image. Update its alt text instead.
-    const navLogo = document.getElementById('navLogo');
-    if (navLogo) {
-      const navLogoImg = navLogo.querySelector('img');
-      if (navLogoImg) navLogoImg.alt = business.name;
-      else navLogo.textContent = business.name;
-    }
+    // navLogo wraps a logo <img> — update its alt text, not textContent,
+    // or the image would get wiped out.
+    const navLogoImg = document.querySelector('#navLogo img');
+    if (navLogoImg) navLogoImg.alt = business.name + ' Pressure Washing';
+    const heroBrand = document.getElementById('heroBrand');
+    if (heroBrand) heroBrand.textContent = business.name;
     const footerName = document.getElementById('footerBusinessName');
     if (footerName) footerName.textContent = business.name;
   }
@@ -446,7 +225,7 @@ function populateBusiness(business) {
     const igLink = document.getElementById('instagramLink');
     if (igLink) {
       igLink.href = 'https://instagram.com/' + business.instagram;
-      igLink.textContent = '📷 @' + business.instagram;
+      igLink.textContent = '@' + business.instagram;
     }
   }
 

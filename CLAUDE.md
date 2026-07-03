@@ -7,9 +7,9 @@
 
 ## WHO YOU ARE WORKING FOR
 
-**Developer/owner:** Jacob (full control — design, code, 3D, structure)
-**End client:** Low Country Shine (pressure washing business, Charleston SC)
-**Client access level:** Photos, reviews, phone number, Instagram handle, service area towns, service descriptions. The client does NOT touch code, CSS, JS, or the 3D model — ever.
+**Developer/owner:** Jacob (full control — design, code, structure)
+**End client:** Low Country Shine (pressure washing business, Charleston SC — sole proprietorship, one person)
+**Client access level:** Photos, reviews, phone number, Instagram handle, service area towns, service descriptions. The client does NOT touch code, CSS, or JS — ever.
 
 ---
 
@@ -58,7 +58,7 @@ lowcountry-shine/
 ├── CLAUDE.md              ← this file (agent instructions)
 ├── index.html             ← all site structure and content
 ├── styles.css             ← all visual design — colors, layout, animations
-├── script.js              ← all JS — 3D model, slider, tilt, form
+├── script.js              ← all JS — slider, tilt, form
 ├── admin/
 │   └── index.html         ← password-protected client CMS panel
 ├── content.json           ← single source of truth for all client-editable content
@@ -123,8 +123,7 @@ The `/admin` panel reads and writes this file through a simple UI.
 - "Save changes" button downloads an updated content.json for the client to
   hand back to Jacob, OR (if GitHub integration is set up) commits directly
 - Clean, mobile-friendly UI so the client can use it from their phone
-- The client CANNOT access or edit: index.html, styles.css, script.js, CLAUDE.md,
-  or anything in the 3D model code
+- The client CANNOT access or edit: index.html, styles.css, script.js, CLAUDE.md
 
 ---
 
@@ -161,12 +160,14 @@ Fixed, frosted glass effect (backdrop-filter blur on marsh green background).
 Contains: logo (text), nav links (Services, How It Works, Service Area, Reviews),
 phone number. Mobile: hide nav links, keep logo and phone.
 
-### 2. HERO — SPLIT LAYOUT WITH 3D MODEL
-Left: eyebrow text, H1 headline, subheadline paragraph, two CTA buttons.
-Right: Three.js 3D canvas with the pressure washer model (see 3D section below).
+### 2. HERO — SINGLE CENTERED COLUMN, NO IMAGE
+Centered: eyebrow text, H1 headline, subheadline paragraph, two CTA buttons.
+No hero image or 3D model — a rotating Three.js logo was tried and removed
+(2026-07) for feeling gimmicky and adding unneeded visual complexity. Keep
+it text-only; if a hero image is wanted later, use a real job photo that
+isn't already shown in the before/after slider directly below.
 Background: dark marsh green gradient with subtle radial light overlays.
 Wave SVG at bottom transitions to oyster background.
-On mobile (< 860px): stack vertically, text on top, 3D model below.
 
 ### 3. BEFORE/AFTER COMPARISON SLIDER
 Drag-to-compare slider. "Before" image clips from right based on handle position.
@@ -177,7 +178,8 @@ Client replaces these two image files when they have real job photos.
 
 ### 4. SERVICES GRID
 Auto-fit CSS grid, min 260px columns. Each service is an <article class="service-card">.
-Cards have: emoji icon, H3 title, description paragraph.
+Cards have: H3 title, description paragraph. No icons/emoji — text only
+(emoji were removed 2026-07 for looking unpolished; do not re-add them).
 3D tilt effect on hover (mouse-tracking perspective transform, desktop only).
 Current services: House Washing, Driveways & Walkways, Decks & Fences,
 Commercial Storefronts, Roof Washing, Docks & Pool Decks.
@@ -218,60 +220,14 @@ Optionally: repeat phone number and Instagram link for easy access.
 
 ---
 
-## 3D MODEL SPEC — PRESSURE WASHER GUN
+## HERO — NO 3D MODEL (REMOVED 2026-07)
 
-Built with Three.js r128 (loaded from cdnjs CDN — no npm needed).
-The model is 100% procedural geometry — no external .glb file required.
-The canvas replaces the right column of the hero section.
-
-### Geometry breakdown:
-| Part            | Geometry              | Material             |
-|-----------------|-----------------------|----------------------|
-| Barrel          | CylinderGeometry      | gunMat (dark gunmetal) |
-| Barrel end cap  | SphereGeometry (half) | gunMat               |
-| Nozzle          | CylinderGeometry (tapered) | nozzleMat (teak/bronze) |
-| Nozzle tip      | ConeGeometry          | nozzleMat            |
-| Handle/grip     | CylinderGeometry      | handleMat (matte black) |
-| Handle cap      | SphereGeometry        | handleMat            |
-| Trigger guard   | TorusGeometry (arc)   | nozzleMat            |
-| Trigger         | BoxGeometry           | nozzleMat            |
-| Hose connector  | CylinderGeometry      | tide green material  |
-| Accent rings x2 | TorusGeometry         | nozzleMat            |
-| Ground shadow   | CircleGeometry disc   | black, opacity 0.18  |
-
-### Lighting (3-point setup):
-- Ambient: white, intensity 0.45
-- Key light: warm teak (#f0c990), intensity 1.6, position (3, 4, 3), casts shadows
-- Fill light: cool sky blue (#7fa8b8), intensity 0.8, position (-3, 1, -2)
-- Rim light: marsh green (#5e8c7b), intensity 0.6, position (0, -2, -4)
-
-### Animations:
-- Auto-rotation: slow Y-axis rotation (+=0.004 per frame)
-- Floating: sine wave on Y position (amplitude 0.06, frequency 0.8)
-- Water particles: 320 Points emitted from nozzle tip, travel along +X axis,
-  reset when they travel too far or lifetime expires. Pulsing opacity.
-- Drag to rotate: mouse/touch drag updates targetRotY and targetRotX.
-  Smooth lerp (0.08 factor) to target. Auto-rotation resumes 3s after drag ends.
-- Max tilt on X axis: ±0.6 radians (prevents model from flipping)
-
-### If upgrading to a real .glb model:
-Use THREE.GLTFLoader (add CDN link for it alongside Three.js).
-Recommended free source: sketchfab.com — search "pressure washer" → filter Free.
-Download .glb format. Drop in images/ folder. Load with:
-```javascript
-const loader = new THREE.GLTFLoader();
-loader.load('images/model.glb', (gltf) => {
-  scene.add(gltf.scene);
-});
-```
-The rest of the scene (lighting, camera, drag controls, animation loop) stays identical.
-
-### Canvas behavior:
-- Transparent background (alpha: true) — hero gradient shows through
-- "drag to rotate" hint text shown below canvas
-- canvas:grab cursor, canvas:active = grabbing
-- Resize handler updates camera aspect ratio and renderer size
-- Respects prefers-reduced-motion: if set, disable auto-rotation and particles
+The hero previously had a Three.js canvas (in practice, a rotating logo.png
+texture plane with water particles — the earlier procedural pressure-washer
+gun geometry was never actually built). Jacob removed it for feeling
+gimmicky and adding unneeded complexity to the header. The hero is now a
+single centered text column — see section 2 above. Do not re-add a 3D/canvas
+element to the hero without Jacob explicitly asking for one again.
 
 ---
 
@@ -388,21 +344,6 @@ H2s for each major section. No skipped heading levels.
 
 - Chrome, Safari, Firefox, Edge — latest 2 versions
 - iOS Safari 15+, Android Chrome
-- Three.js canvas: gracefully hide (display:none) if WebGL is not supported.
-  Show a static high-quality photo of a pressure washer job as fallback.
-  Detection:
-  ```javascript
-  function webglSupported() {
-    try {
-      const c = document.createElement('canvas');
-      return !!(c.getContext('webgl') || c.getContext('experimental-webgl'));
-    } catch(e) { return false; }
-  }
-  if (!webglSupported()) {
-    document.getElementById('hero3dWrap').innerHTML =
-      '<img src="images/hero-fallback.jpg" alt="Pressure washing in Charleston SC" style="width:100%;height:100%;object-fit:cover;border-radius:24px;">';
-  }
-  ```
 
 ---
 
@@ -411,8 +352,6 @@ H2s for each major section. No skipped heading levels.
 The agent should be able to verify all of these before calling a build "done":
 
 - [ ] index.html opens without console errors in Chrome DevTools
-- [ ] 3D canvas renders and responds to drag on desktop
-- [ ] 3D canvas renders and responds to touch on mobile (375px viewport)
 - [ ] Before/after slider drags smoothly on desktop and touch
 - [ ] Service card tilt activates on desktop hover, is absent on mobile
 - [ ] All nav links scroll to correct sections
@@ -475,8 +414,14 @@ For new features:
 ## WHAT THE AGENT MUST NEVER DO
 
 - Never change the color palette without explicit instruction from Jacob
-- Never remove the Three.js 3D model or simplify it to a static image
-  (unless implementing a proper .glb upgrade)
+- Never re-add a 3D model/canvas to the hero without Jacob explicitly asking
+  (removed 2026-07 for feeling gimmicky — see HERO section above)
+- Never use plural pronouns (we/our/us) in the business's own copy — this
+  is a sole proprietorship run by one person, use I/my/me. Does NOT apply
+  to customer review quotes, which stay in the customer's own words.
+- Never use decorative/pictograph emoji (🏠📞📷 etc.) in the UI — removed
+  2026-07 for looking unpolished. Functional monochrome glyphs (✕ close,
+  ★ star ratings, ⟷/‹› arrows) are fine since they're not decorative emoji.
 - Never add npm, webpack, Vite, or any build tool to this project
 - Never expose the admin password in any public-facing file other than /admin/index.html
 - Never let the client edit index.html, styles.css, script.js, or CLAUDE.md directly
@@ -494,25 +439,23 @@ For new features:
 
 As of initial build:
 - [x] Nav bar
-- [x] Hero split layout
-- [x] Three.js 3D pressure washer model with drag-to-rotate
-- [x] Water particle spray animation
+- [x] Hero — single centered text column, no image (3D model removed 2026-07)
 - [x] Before/after slider (touch + mouse)
 - [x] Services grid with 3D tilt effect
 - [x] How it works / process section
 - [x] Service area with town list (map placeholder)
 - [x] Reviews section (placeholder content)
-- [x] Quote form (Formspree-ready, needs endpoint)
+- [x] Quote form wired to Formspree (endpoint: xpqgokkz), fetch()-based,
+  no page reload, inline success/error messaging
 - [x] Footer with auto year
-- [ ] content.json + dynamic content loading
-- [ ] /admin CMS panel
-- [ ] Photo gallery section with lightbox
-- [ ] Scroll-triggered fade-in animations
-- [ ] Nav scroll behavior (opacity + shadow on scroll)
-- [ ] WebGL fallback detection
-- [ ] SEO meta tags (OG tags)
-- [ ] Google Maps embed
-- [ ] Real before/after photos (client to provide)
-- [ ] Real reviews (client to provide once jobs are done)
-- [ ] Formspree endpoint (client to set up)
-- [ ] hero-fallback.jpg for no-WebGL devices
+- [x] content.json + dynamic content loading
+- [x] /admin CMS panel
+- [x] Photo gallery section with lightbox (code is live; content.json's
+  gallery array is empty until the client uploads job photos)
+- [x] Scroll-triggered fade-in animations
+- [x] Nav scroll behavior (opacity + shadow on scroll)
+- [x] SEO meta tags (OG tags)
+- [x] Google Maps embed (general James Island location — swap for a real
+  Business Profile pin once the client has a Google listing)
+- [x] Real before/after photos (siding job)
+- [ ] Real reviews (client to provide once jobs are done — still placeholder)

@@ -8,3 +8,6 @@
 *.zip
 lowcountry-shine-final/
 lowcountry-shine-final 2/
+
+# Wrangler's local build cache/temp files — not part of the site
+.wrangler/

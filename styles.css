@@ -109,16 +109,16 @@ section h2.center, p.eyebrow.center { text-align: center; }
   display: flex;
   align-items: center;
 }
-/* Logo PNG is brand blue on transparent — nav background is dark navy,
-   so invert to white for legibility. */
+/* Logo PNG is brand blue/black on transparent — inverted to white so it
+   blends cleanly into the dark nav with no separate background box. */
 .nav-logo-img {
-  height: 64px;
+  height: 42px;
   width: auto;
   display: block;
   filter: brightness(0) invert(1);
 }
-@media (max-width: 780px) {
-  .nav-logo-img { height: 48px; }
+@media (max-width: 480px) {
+  .nav-logo-img { height: 34px; }
 }
 .nav-links { display: flex; gap: 1.8rem; }
 .nav-links a {
@@ -154,20 +154,26 @@ section h2.center, p.eyebrow.center { text-align: center; }
     radial-gradient(circle at 20% 20%, rgba(61,159,224,0.15), transparent 50%),
     radial-gradient(circle at 80% 70%, rgba(126,200,244,0.08), transparent 50%);
 }
-/* Two-column split */
+/* Single centered column — no hero image/canvas */
 .hero-inner {
   position: relative;
   z-index: 2;
-  max-width: 1180px;
+  max-width: 720px;
   margin: 0 auto;
   width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  align-items: center;
+  text-align: center;
 }
 .hero-content {
   color: var(--frost);
+}
+.hero-brand {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--frost);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0.3rem 0 0.9rem;
 }
 .hero h1 {
   font-size: clamp(2.2rem, 4.5vw, 3.8rem);
@@ -178,38 +184,9 @@ section h2.center, p.eyebrow.center { text-align: center; }
   font-size: 1.05rem;
   color: var(--frost-dark);
   max-width: 460px;
-  margin: 0 0 2.2rem;
+  margin: 0 auto 2.2rem;
 }
-.hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
-
-/* 3D canvas container */
-.hero-3d {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 24px;
-  overflow: hidden;
-}
-#threeCanvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-  border-radius: 24px;
-  cursor: grab;
-}
-#threeCanvas:active { cursor: grabbing; }
-.canvas-hint {
-  position: absolute;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(244,241,232,0.45);
-  pointer-events: none;
-  white-space: nowrap;
-}
+.hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
 
 .hero-wave {
   position: absolute;
@@ -221,13 +198,6 @@ section h2.center, p.eyebrow.center { text-align: center; }
 .hero-wave path { fill: var(--frost); }
 
 @media (max-width: 860px) {
-  .hero-inner {
-    grid-template-columns: 1fr;
-  }
-  .hero-3d {
-    max-width: 380px;
-    margin: 0 auto;
-  }
   .hero h1 { font-size: 2.2rem; }
 }
 
@@ -340,12 +310,11 @@ section h2.center, p.eyebrow.center { text-align: center; }
 .service-card:hover {
   box-shadow: 0 20px 45px -18px rgba(13,24,36,0.3);
 }
-.service-icon {
-  font-size: 1.8rem;
-  margin-bottom: 0.9rem;
+.service-card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
   transform: translateZ(30px);
 }
-.service-card h3 { font-size: 1.15rem; margin-bottom: 0.5rem; }
 .service-card p { font-size: 0.92rem; color: #555; }
 
 /* ============== PROCESS ============== */
