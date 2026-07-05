@@ -757,19 +757,61 @@ function safeFilename(name) {
   return Date.now() + '-' + cleaned;
 }
 
+// Detects HEIC/HEIF photos by their actual file signature, not just the
+// extension. iPhones commonly produce files that are secretly HEIC even
+// when named "photo.jpg" (this has already happened once on this site).
+// Browsers can't display HEIC in an <img> tag, so without this check a
+// bad upload would silently show up blank on the live site with no
+// error anywhere — checking here means the person uploading finds out
+// immediately instead of the mistake sitting unnoticed for days.
+function looksLikeHeic(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const bytes = new Uint8Array(reader.result);
+      if (bytes.length < 12) { resolve(false); return; }
+      // ISO base media file box: bytes 4-7 spell "ftyp", bytes 8-11 are
+      // the brand code that identifies the specific format.
+      const boxType = String.fromCharCode(bytes[4], bytes[5], bytes[6], bytes[7]);
+      const brand = String.fromCharCode(bytes[8], bytes[9], bytes[10], bytes[11]);
+      const heicBrands = ['heic', 'heix', 'hevc', 'hevx', 'heim', 'heis', 'hevm', 'hevs', 'mif1', 'msf1'];
+      resolve(boxType === 'ftyp' && heicBrands.indexOf(brand) !== -1);
+    };
+    reader.onerror = () => resolve(false);
+    reader.readAsArrayBuffer(file.slice(0, 12));
+  });
+}
+
 document.getElementById('photoUpload').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    // preview holds the full data URL (used for on-screen preview AND
-    // as the actual upload payload on save — see saveAllBtn handler).
-    const filename = safeFilename(file.name);
-    gallery.push({ src: 'images/gallery/' + filename, label: '', preview: reader.result });
-    renderGalleryWithPreviews();
-  };
-  reader.readAsDataURL(file);
-  e.target.value = '';
+
+  looksLikeHeic(file).then((isHeic) => {
+    if (isHeic) {
+      alert(
+        "This photo is saved in HEIC format (common on iPhones), which won't " +
+        "display on the website even though it's named like a .jpg.\n\n" +
+        "To fix it: open the photo in the Photos app, tap Share, then Save " +
+        "to Files or send it to yourself in Messages/Mail — that usually " +
+        "converts it to JPEG. Then upload that converted copy instead.\n\n" +
+        "To prevent this on future photos: Settings → Camera → Formats → " +
+        "\"Most Compatible\" on the iPhone that's taking the pictures."
+      );
+      e.target.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      // preview holds the full data URL (used for on-screen preview AND
+      // as the actual upload payload on save — see saveAllBtn handler).
+      const filename = safeFilename(file.name);
+      gallery.push({ src: 'images/gallery/' + filename, label: '', preview: reader.result });
+      renderGalleryWithPreviews();
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  });
 });
 
 // Same as renderGallery but uses the in-memory preview data URL for any
